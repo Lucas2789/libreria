@@ -21,54 +21,46 @@ const productos = [
 
 alert ("¡Bienvenido a la Pagina oficial de ARGENTUM!")
 
-let carrito = []
 
-let totalProductos = productos;
-localStorage.setItem("productos", JSON.stringify(totalProductos));
-console.log(localStorage.getItem("productos"));
 
-productos.forEach(producto => {
+productos.forEach(productos => {
+    const {id,nombre,precio,imagen} = productos
     let productoRenderizado = document.createElement("div")
     productoRenderizado.innerHTML = `
-    <h3>Nombre:${producto.nombre}</h3>
-    <span class="precio">precio: $${producto.precio}</span>
-    <img class="imagenProducto"src="${producto.imagen}">
-    <button id="agregar${producto.id}" class="boton-agregar">Agregar al Carrito</button>
+    <h3>Nombre:${productos.nombre}</h3>
+    <span class="precio">precio: $${productos.precio}</span>
+    <img class="imagenProducto"src="${productos.imagen}">
+    <button id="agregar${productos.id}" class="boton-agregar">Agregar al Carrito</button>
     `
     div.append(productoRenderizado);
-    const boton = document.getElementById(`agregar${producto.id}`)
-    boton.addEventListener('click', () => { agregarAlCarrito(producto)
+    const boton = document.getElementById(`agregar${productos.id}`)
+    boton.addEventListener('click', () => { agregarAlCarrito(productos)
     })
 
 })
 
 
-const agregarAlCarrito = (producto) => {
-    console.log(producto.id)
-    let productoExiste = carrito.find (item => item.id === producto.id)
-    console.log(productoExiste)
-    if (productoExiste) {
-        productoExiste.precio = productoExiste.precio + producto.precio
-        productoExiste.cantidad = productoExiste.cantidad + 1
-        
-    } else { 
-        carrito.push({
-            id: producto.id,
-            nombre: producto.nombre,
-            precio: producto.precio,
-            imagen: producto.imagen,
-            cantidad: 1
-        })
-    }
+const agregarAlCarrito = (productos) => {
+    console.log(productos.id)
+    let productoExiste = carrito.find (item => item.id === productos.id)
+        productoExiste === undefined ? carrito.push({...productos, cantidad: 1}) :
+        productoExiste.precio = productoExiste.precio + productos.precio
+        productoExiste.cantidad++
 }
+
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 const buscarProducto = (string) => {
     console.log(string)
-    let productoBuscado = productos.find(producto => producto.nombre.includes(string))
+    let productoBuscado = productos.find(productos => productos.nombre.includes(string))
     console.log(productoBuscado);
     inputBuscador.value = " "
 }
 
-carritoFinal.addEventListener("click", () => console.log(carrito))
+carritoFinal.addEventListener("click", () => localStorage.setItem("carrito" , JSON.stringify(carrito)));
 
-botonBuscador.addEventListener("click", () => buscarProducto(inputBuscador.value))
+botonBuscador.addEventListener("click", () => buscarProducto(inputBuscador.value));
+
+botonVaciar.addEventListener("click", () => localStorage.clear(carrito))
+botonVaciar.addEventListener("click", () => carrito = [] && Swal.fire("Borraste el carrito"))
+contenedor.innerHTML = "";
